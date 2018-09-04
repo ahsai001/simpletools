@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="@android:color/white"
+    tools:context="com.ahsailabs.simpletools.fragments.ReadQuranLogActivityFragment"
+    tools:showIn="@layout/activity_read_quran_log">
+
+
+    <TextView
+        android:id="@+id/instructionTextView"
+        android:layout_width="wrap_content"
+        android:textAlignment="center"
+        android:text="This tool is used to log your quran reading status"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Spinner
+        android:id="@+id/suratView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        app:layout_constraintTop_toBottomOf="@id/instructionTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ayatView">
+
+    </Spinner>
+    <NumberPicker
+        android:id="@+id/ayatView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/suratView"
+        app:layout_constraintBottom_toBottomOf="@id/suratView"
+        app:layout_constraintStart_toEndOf="@id/suratView"
+        app:layout_constraintEnd_toStartOf="@+id/logButtonView">
+
+    </NumberPicker>
+
+    <Button
+        android:id="@+id/logButtonView"
+        android:text="log"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/ayatView"
+        app:layout_constraintBottom_toBottomOf="@id/ayatView"
+        app:layout_constraintStart_toEndOf="@id/ayatView"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <RelativeLayout
+        android:id="@+id/logListView"
+        android:background="@android:color/white"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/ayatView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <com.zaitunlabs.zlcore.views.CustomRecylerView
+            android:id="@+id/logRecylerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+        </com.zaitunlabs.zlcore.views.CustomRecylerView>
+
+        <LinearLayout
+            android:id="@+id/log_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:text="@string/info_no_data"/>
+        </LinearLayout>
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

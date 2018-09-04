@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+android {
+    signingConfigs {
+    }
+    compileSdkVersion 27
+    buildToolsVersion "26.0.2"
+    defaultConfig {
+        applicationId "com.ahsailabs.simpletools"
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionCode 3
+        //versionName "1.0.1.0" ==> 1
+
+
+        versionName "1.1.2.3"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+}
+
+repositories {
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile project(':zlcore')
+    compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:design:27.0.2'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.google.firebase:firebase-core:15.0.2'
+    compile 'com.google.firebase:firebase-messaging:15.0.2'
+    compile 'com.google.firebase:firebase-ads:15.0.0'
+    compile 'com.crashlytics.sdk.android:crashlytics:2.9.1'
+    compile 'com.google.android.gms:play-services-auth:15.0.1'
+    compile 'com.google.android.gms:play-services-drive:15.0.1'
+    compile 'de.siegmar:fastcsv:1.0.2'
+    testCompile 'junit:junit:4.12'
+}
+
+apply plugin: 'com.google.gms.google-services'

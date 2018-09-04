@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "368641058862",
+    "firebase_url": "https://simple-tools-3e1db.firebaseio.com",
+    "project_id": "simple-tools-3e1db",
+    "storage_bucket": "simple-tools-3e1db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368641058862:android:852a71d75b2360ed",
+        "android_client_info": {
+          "package_name": "com.ahsailabs.simpletools"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "368641058862-3an2tbjjp0utp0ko65ss5t0nb0ejeqmm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ahsailabs.simpletools",
+            "certificate_hash": "1a486bcfb2029d74372a1f42e80a2b72482ad85a"
+          }
+        },
+        {
+          "client_id": "368641058862-cnms9v1inu0sibi3crvpc536sl024vft.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ahsailabs.simpletools",
+            "certificate_hash": "f0d27d65d1cdeb1ff09fa6abf4fb2eddeb15d298"
+          }
+        },
+        {
+          "client_id": "368641058862-1l4mh0hqm1pjm2r8dg5k1alq16rvcalj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcXtqAQ4wAC_O_J_rNCnqPl3ETkMZn-Jo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "368641058862-1l4mh0hqm1pjm2r8dg5k1alq16rvcalj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

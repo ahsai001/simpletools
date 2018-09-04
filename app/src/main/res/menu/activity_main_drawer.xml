@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_linkwa"
+            android:icon="@drawable/baseline_link_24"
+            android:title="Create Link 'Click to Chat' WA" />
+        <item
+            android:id="@+id/nav_sendwa"
+            android:icon="@drawable/baseline_send_24"
+            android:title="Send WA to Unsaved Number" />
+        <item
+            android:id="@+id/nav_readquranlog"
+            android:icon="@drawable/baseline_import_contacts_24"
+            android:title="Qur'an Reading Log" />
+        <item
+            android:id="@+id/nav_message"
+            app:actionViewClass="android.widget.TextView"
+            android:icon="@drawable/message"
+            android:title="Message" />
+        <item
+            android:id="@+id/nav_store"
+            android:icon="@drawable/store"
+            android:title="Store" />
+        <item
+            android:id="@+id/nav_app_list"
+            android:icon="@drawable/otherapps"
+            android:title="Promoted Apps" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/about"
+            android:title="About" />
+    </group>
+
+</menu>
