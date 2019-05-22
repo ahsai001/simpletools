@@ -1,16 +1,16 @@
 package com.ahsailabs.simpletools.fragments;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,18 +18,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
 import com.ahsailabs.simpletools.R;
+import com.ahsailabs.simpletools.activities.ProgressActivity;
 import com.ahsailabs.simpletools.adapters.ReadQuranLogListAdapter;
 import com.ahsailabs.simpletools.models.ReadQuranLogModel;
 import com.zaitunlabs.zlcore.core.BaseFragment;
 import com.zaitunlabs.zlcore.core.BaseRecyclerViewAdapter;
 import com.zaitunlabs.zlcore.customs.DataList;
-import com.zaitunlabs.zlcore.listeners.SwipeDragCallback;
 import com.zaitunlabs.zlcore.utils.CommonUtils;
 import com.zaitunlabs.zlcore.utils.FileUtils;
 import com.zaitunlabs.zlcore.utils.FormCommonUtils;
@@ -53,7 +52,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
     private CustomRecylerView recyclerView;
     private View emptyView;
     private List<String> suratList = new ArrayList<>();
-    private List<Integer> ayatList = new ArrayList<>();
+    private ArrayList<Integer> ayatList = new ArrayList<>();
     private List<ReadQuranLogModel> logModelList = new ArrayList<>();
     private ReadQuranLogListAdapter logReadQuranListAdapter;
 
@@ -82,7 +81,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
         ayatView = view.findViewById(R.id.ayatView);
         logButton = view.findViewById(R.id.logButtonView);
 
-        recyclerView = (CustomRecylerView) view.findViewById(R.id.logRecylerView);
+        recyclerView = view.findViewById(R.id.logRecylerView);
         emptyView = view.findViewById(R.id.log_empty_view);
     }
 
@@ -176,7 +175,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
             @Override
             public void onClick(View view, Object dataModel, final int position) {
                 if(view.getId() == R.id.item_row_optionView){
-                    CommonUtils.showPopup(view.getContext(), R.menu.menu_item_read_quran_log, view, null,
+                    CommonUtils.showPopupMenu(view.getContext(), R.menu.menu_item_read_quran_log, view, null,
                             new PopupMenu.OnMenuItemClickListener() {
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
@@ -211,23 +210,30 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_delete_all){
-            CommonUtils.showDialog2Option(getActivity(), "Delete log confirmation", "are you sure?",
-                    "delete", new Runnable() {
-                        @Override
-                        public void run() {
-                            ReadQuranLogModel.deleteAll();
-                            logModelList.clear();
-                            logReadQuranListAdapter.notifyDataSetChanged();
-                            CommonUtils.showSnackBar(getActivity(),"delete all log successfully");
-                        }
-                    }, "cancel", new Runnable() {
-                        @Override
-                        public void run() {
+        switch (item.getItemId()){
+            case R.id.action_delete_all:
+                CommonUtils.showDialog2Option(getActivity(), "Delete log confirmation", "are you sure?",
+                        "delete", new Runnable() {
+                            @Override
+                            public void run() {
+                                ReadQuranLogModel.deleteAll();
+                                logModelList.clear();
+                                logReadQuranListAdapter.notifyDataSetChanged();
+                                CommonUtils.showSnackBar(getActivity(),"delete all log successfully");
+                            }
+                        }, "cancel", new Runnable() {
+                            @Override
+                            public void run() {
 
-                        }
-                    });
+                            }
+                        });
+                return true;
+            case R.id.action_show_progress:
+                ProgressActivity.Companion.start(getActivity(), ayatList);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
         }
-        return super.onOptionsItemSelected(item);
     }
 }

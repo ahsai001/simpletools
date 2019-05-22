@@ -13,4 +13,5 @@
     <string name="feedback_body_template"></string>
     <string name="title_activity_read_quran_log">Qur\'an Reading Log</string>
     <string name="title_activity_link_wa">Create Link \'Click to Chat\' WA</string>
+    <string name="info_no_data">There are no data currently</string>
 </resources>

@@ -1,9 +1,9 @@
 package com.ahsailabs.simpletools.activities;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.ahsailabs.simpletools.R;
 import com.zaitunlabs.zlcore.activities.BaseSplashActivity;
@@ -29,8 +29,9 @@ public class InitApp extends BaseSplashActivity {
     }
 
     @Override
-    protected void doNextAction() {
+    protected boolean doNextAction() {
         MainActivity.start(this);
+        return true;
     }
 
     @Override

@@ -1,14 +1,12 @@
 package com.ahsailabs.simpletools.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.LayoutInflater;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
+
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -93,13 +91,15 @@ public class ReadQuranLogListAdapter extends BaseRecyclerViewAdapter<ReadQuranLo
            }
        }
 
+        /*
         if(totalAyat == 0){
             for (Integer ayat : ayatList){
                 totalAyat += ayat;
             }
         }
+        */
 
-        totalAyat = 0;
+        //totalAyat = 0;
         if(totalAyat == 0){
             for (Integer ayat : ayatInJuzList){
                 totalAyat += ayat;

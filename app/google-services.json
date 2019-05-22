@@ -15,19 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "368641058862-3an2tbjjp0utp0ko65ss5t0nb0ejeqmm.apps.googleusercontent.com",
+          "client_id": "368641058862-gn3o3s5or867jdcjvg7760u32c6lshgt.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ahsailabs.simpletools",
-            "certificate_hash": "1a486bcfb2029d74372a1f42e80a2b72482ad85a"
-          }
-        },
-        {
-          "client_id": "368641058862-cnms9v1inu0sibi3crvpc536sl024vft.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.ahsailabs.simpletools",
-            "certificate_hash": "f0d27d65d1cdeb1ff09fa6abf4fb2eddeb15d298"
+            "certificate_hash": "e821844e70a0fc41d45ceade3d3ad5bc36fef673"
           }
         },
         {
@@ -41,22 +33,16 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "368641058862-1l4mh0hqm1pjm2r8dg5k1alq16rvcalj.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-3647411985348830~8833470581"
     }
   ],
   "configuration_version": "1"

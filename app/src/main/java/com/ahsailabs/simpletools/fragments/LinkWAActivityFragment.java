@@ -1,8 +1,8 @@
 package com.ahsailabs.simpletools.fragments;
 
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -25,7 +25,6 @@ import com.zaitunlabs.zlcore.utils.HttpClientUtils;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * A placeholder fragment containing a simple view.

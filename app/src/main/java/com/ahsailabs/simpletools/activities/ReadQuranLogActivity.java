@@ -1,12 +1,11 @@
 package com.ahsailabs.simpletools.activities;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -37,11 +36,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.zaitunlabs.zlcore.constants.ZLCoreConstanta;
 import com.zaitunlabs.zlcore.core.BaseActivity;
-import com.zaitunlabs.zlcore.core.WebViewActivity;
 import com.zaitunlabs.zlcore.events.ReInitializeDatabaseEvent;
 import com.zaitunlabs.zlcore.utils.CommonUtils;
 import com.zaitunlabs.zlcore.utils.FileUtils;
-import com.zaitunlabs.zlcore.utils.PermissionUtils;
 
 import org.greenrobot.eventbus.EventBus;
 

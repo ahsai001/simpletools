@@ -6,4 +6,8 @@
         android:orderInCategory="100"
         android:title="Delete All Log"
         app:showAsAction="never" />
+    <item android:id="@+id/action_show_progress"
+        android:orderInCategory="99"
+        android:title="Show Progress Chart"
+        app:showAsAction="never"/>
 </menu>

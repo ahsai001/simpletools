@@ -1,7 +1,7 @@
 package com.ahsailabs.simpletools.models;
 
 import android.provider.BaseColumns;
-import android.support.annotation.RequiresPermission;
+import androidx.annotation.RequiresPermission;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
