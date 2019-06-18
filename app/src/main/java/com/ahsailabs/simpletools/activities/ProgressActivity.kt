@@ -47,7 +47,6 @@ class ProgressActivity : AppCompatActivity() {
         }
 
         val dataSet = LineDataSet(entries,"Jumlah ayat dibaca akumulasi setiap hari")
-        dataSet
         val lineData = LineData(dataSet)
 
         val lineChart: LineChart = viewBindingUtils.getViewWithId(R.id.lcProgress) as LineChart

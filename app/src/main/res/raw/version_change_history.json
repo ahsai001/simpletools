@@ -1,5 +1,8 @@
 [
     {
+        "item": "version 1.2.4.7",
+        "description": "- bug fixing : change app name for device with indonesia language"
+    },{
         "item": "version 1.2.3.6",
         "description": "- bug fixing\n- penambahan fitur lihat grafik perkembangan pembacaan alqur'an"
     },{
