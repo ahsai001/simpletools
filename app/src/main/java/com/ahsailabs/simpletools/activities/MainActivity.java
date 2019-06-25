@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        FCMIntentService.startSending(this,"3", false);
+        FCMIntentService.startSending(this,"3", false, true);
     }
 
     @Subscribe
@@ -169,13 +169,13 @@ public class MainActivity extends AppCompatActivity
                     0,R.string.feedback_mail_to, R.string.feedback_title, R.string.feedback_body_template,
                     0,R.raw.version_change_history, true, "https://www.ahsai001.com",
                     false, "ahsai001", "https://www.ahsai001.com", getString(R.string.feedback_mail_to),R.mipmap.ic_launcher,"2018\nAll right reserved",
-                    R.color.colorPrimary, ContextCompat.getColor(this,android.R.color.white),ContextCompat.getColor(this,android.R.color.white), null);
+                    R.color.colorPrimary, ContextCompat.getColor(this,android.R.color.white),ContextCompat.getColor(this,android.R.color.white), null, true);
         } else if (id == R.id.nav_app_list) {
-            AppListActivity.start(this);
+            AppListActivity.start(this, true);
         } else if (id == R.id.nav_store) {
-            StoreActivity.start(this);
+            StoreActivity.start(this, true);
         } else if (id == R.id.nav_message) {
-            MessageListActivity.start(this);
+            MessageListActivity.start(this, true);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

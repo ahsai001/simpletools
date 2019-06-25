@@ -92,7 +92,7 @@ public class LinkWAActivityFragment extends BaseFragment {
         String message = messageEditText.getText().toString();
         final Snackbar loading = CommonUtils.showLoadingSnackBar(getActivity(),"Please wait...");
         AndroidNetworking.post("https://api.zaitunlabs.com/genpro/v1/waapi")
-                .setOkHttpClient(HttpClientUtils.getHTTPClient(getActivity(),"v1"))
+                .setOkHttpClient(HttpClientUtils.getHTTPClient(getActivity(),"v1", true))
                 .addBodyParameter("nowa",phoneNumber)
                 .addBodyParameter("message",CommonUtils.urlEncode(message))
                 .setTag("linkwa")

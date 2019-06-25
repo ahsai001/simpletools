@@ -35,6 +35,11 @@ public class InitApp extends BaseSplashActivity {
     }
 
     @Override
+    protected boolean isMeidIncluded() {
+        return true;
+    }
+
+    @Override
     protected int getMinimumSplashTimeInMS() {
         return 3000;
     }
