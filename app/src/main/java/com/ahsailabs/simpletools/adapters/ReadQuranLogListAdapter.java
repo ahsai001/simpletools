@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.models.ReadQuranLogModel;
+import com.opencsv.CSVReader;
 import com.zaitunlabs.zlcore.core.BaseRecyclerViewAdapter;
 import com.zaitunlabs.zlcore.utils.CommonUtils;
 import com.zaitunlabs.zlcore.utils.DateStringUtils;
@@ -77,15 +78,24 @@ public class ReadQuranLogListAdapter extends BaseRecyclerViewAdapter<ReadQuranLo
 
     private int getCurrentJuz(Context context, ReadQuranLogModel model){
        if(ayatInJuzList == null){
-           CsvReader csvReader = new CsvReader();
-           CsvParser csvParser = null;
+           ayatInJuzList = new ArrayList<>();
            try {
-               csvParser = csvReader.parse(FileUtils.getReaderFromRawFile(context, R.raw.ayatinjuz));
+               CsvReader csvReader = new CsvReader();
+               CsvParser csvParser = csvReader.parse(FileUtils.getReaderFromRawFile(context, R.raw.ayatinjuz));
                CsvRow row;
-               ayatInJuzList = new ArrayList<>();
                while ((row = csvParser.nextRow()) != null) {
                    ayatInJuzList.add(Integer.parseInt(row.getField(1)));
                }
+           } catch (NoClassDefFoundError e){
+                try {
+                    CSVReader reader = new CSVReader(FileUtils.getReaderFromRawFile(context, R.raw.ayatinjuz));
+                    String[] nextLine;
+                    while ((nextLine = reader.readNext()) != null) {
+                        ayatInJuzList.add(Integer.parseInt(nextLine[1]));
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
            } catch (IOException e) {
                e.printStackTrace();
            }

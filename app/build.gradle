@@ -50,7 +50,11 @@ dependencies {
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation 'com.google.android.gms:play-services-drive:16.1.0'
+
+
     implementation 'de.siegmar:fastcsv:1.0.2'
+    implementation 'com.opencsv:opencsv:4.6'
+
     testImplementation 'junit:junit:4.12'
 
 

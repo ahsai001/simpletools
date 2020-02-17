@@ -26,6 +26,7 @@ import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.activities.ProgressActivity;
 import com.ahsailabs.simpletools.adapters.ReadQuranLogListAdapter;
 import com.ahsailabs.simpletools.models.ReadQuranLogModel;
+import com.opencsv.CSVReader;
 import com.zaitunlabs.zlcore.core.BaseFragment;
 import com.zaitunlabs.zlcore.core.BaseRecyclerViewAdapter;
 import com.zaitunlabs.zlcore.customs.DataList;
@@ -34,6 +35,7 @@ import com.zaitunlabs.zlcore.utils.FileUtils;
 import com.zaitunlabs.zlcore.utils.FormCommonUtils;
 import com.zaitunlabs.zlcore.views.CustomRecylerView;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,14 +91,24 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        CsvReader csvReader = new CsvReader();
-        CsvParser csvParser = null;
         try {
-            csvParser = csvReader.parse(FileUtils.getReaderFromRawFile(getActivity(), R.raw.alquran));
+            CsvReader csvReader = new CsvReader();
+            CsvParser csvParser = csvReader.parse(FileUtils.getReaderFromRawFile(getActivity(), R.raw.alquran));
             CsvRow row;
             while ((row = csvParser.nextRow()) != null) {
-                suratList.add(row.getField(0)+"."+row.getField(1));
+                suratList.add(row.getField(0) + "." + row.getField(1));
                 ayatList.add(Integer.parseInt(row.getField(3)));
+            }
+        } catch (NoClassDefFoundError e){
+            try {
+                CSVReader reader = new CSVReader(FileUtils.getReaderFromRawFile(getActivity(), R.raw.alquran));
+                String[] nextLine;
+                while ((nextLine = reader.readNext()) != null) {
+                    suratList.add(nextLine[0] + "." + nextLine[1]);
+                    ayatList.add(Integer.parseInt(nextLine[3]));
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
