@@ -15,26 +15,22 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.zaitunlabs.zlcore.utils.ViewBindingUtils
+import com.zaitunlabs.zlcore.utils.ViewBindingUtil
 import java.util.*
-import kotlin.collections.ArrayList
-import com.zaitunlabs.zlcore.utils.CommonUtils
+import com.zaitunlabs.zlcore.utils.CommonUtil
 import java.text.SimpleDateFormat
 
 
 class ProgressActivity : AppCompatActivity() {
-    lateinit var viewBindingUtils: ViewBindingUtils<View>
-    lateinit var ayatList: ArrayList<Int>
+    lateinit var viewBindingUtils: ViewBindingUtil<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_progress)
 
+        val ayatList = intent.getIntegerArrayListExtra("ayatList")
 
-        ayatList = intent.getIntegerArrayListExtra("ayatList")
-
-        viewBindingUtils = ViewBindingUtils.initWithParentView(findViewById<View>(R.id.root))
-
+        viewBindingUtils = ViewBindingUtil.initWithParentView(findViewById<View>(R.id.root))
 
         val entries: MutableList<Entry> = ArrayList()
 
@@ -76,7 +72,7 @@ class ProgressActivity : AppCompatActivity() {
 
 
 
-    fun getProgressList(logList: List<ReadQuranLogModel>, ayatList: ArrayList<Int>): Pair<List<Int>,List<String>> {
+    fun getProgressList(logList: List<ReadQuranLogModel>, ayatList: ArrayList<Int>?): Pair<List<Int>,List<String>> {
         if(logList.size > 1){
             //reversed list
             val reversedlogList = logList.reversed()
@@ -88,7 +84,7 @@ class ProgressActivity : AppCompatActivity() {
                 if(i == 0) continue
                 if(reversedlogList[i].nomor == reversedlogList[i-1].nomor){
                     //case 1 : kalo dalam 1 surat ==> ayat2-ayat1
-                    progressDateList.add(reversedlogList[i].timestamp)
+                    progressDateList.add(reversedlogList[i]._created_at)
                     progressList.add(reversedlogList[i].ayat - reversedlogList[i-1].ayat)
                 } else {
                     /*
@@ -101,13 +97,18 @@ class ProgressActivity : AppCompatActivity() {
                         }
                      */
 
-                    var totalAyat = ayatList[reversedlogList[i-1].nomor-1] - reversedlogList[i-1].ayat + 1
-                    for (x in (reversedlogList[i-1].nomor+1) until (reversedlogList[i].nomor-1)){
-                        totalAyat += ayatList[x-1]
+                    var totalAyat = 0
+
+                    ayatList?.let {
+                        var totalAyat = ayatList[reversedlogList[i-1].nomor-1] - reversedlogList[i-1].ayat + 1
+                        for (x in (reversedlogList[i-1].nomor+1) until (reversedlogList[i].nomor-1)){
+                            totalAyat += ayatList[x-1]
+                        }
                     }
+
                     totalAyat += reversedlogList[i].ayat
 
-                    progressDateList.add(reversedlogList[i].timestamp)
+                    progressDateList.add(reversedlogList[i]._created_at)
                     progressList.add(totalAyat)
                 }
             }
@@ -124,7 +125,7 @@ class ProgressActivity : AppCompatActivity() {
             //Log.e("ahmad","progressDateList : ${progressDateList.size}")
 
             for (ix in progressList.indices){
-                val df = SimpleDateFormat("MMM dd, yyyy", CommonUtils.getCurrentDeviceLocale(this))
+                val df = SimpleDateFormat("MMM dd, yyyy", CommonUtil.getCurrentDeviceLocale(this))
                 val dateString = df.format(progressDateList[ix])
 
                 //Log.e("ahmad","date $ix : $dateString")
@@ -144,10 +145,12 @@ class ProgressActivity : AppCompatActivity() {
         return Pair(emptyList(), emptyList())
     }
 
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId){
-            android.R.id.home -> finish()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home -> {
+                finish()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

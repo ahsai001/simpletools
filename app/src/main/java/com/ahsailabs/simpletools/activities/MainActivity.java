@@ -27,11 +27,11 @@ import com.zaitunlabs.zlcore.activities.AppListActivity;
 import com.zaitunlabs.zlcore.activities.MessageListActivity;
 import com.zaitunlabs.zlcore.activities.StoreActivity;
 import com.zaitunlabs.zlcore.events.InfoCounterEvent;
-import com.zaitunlabs.zlcore.models.InformationModel;
 import com.zaitunlabs.zlcore.modules.about.AboutUs;
 import com.zaitunlabs.zlcore.services.FCMIntentService;
-import com.zaitunlabs.zlcore.utils.EventsUtils;
-import com.zaitunlabs.zlcore.utils.PermissionUtils;
+import com.zaitunlabs.zlcore.tables.InformationModel;
+import com.zaitunlabs.zlcore.utils.EventsUtil;
+import com.zaitunlabs.zlcore.utils.PermissionUtil;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView messageItemView;
-    private PermissionUtils permissionUtils;
+    private PermissionUtil permissionUtils;
     private AdView mAdView;
 
     @Override
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setItemIconTintList(null);
 
-        permissionUtils = PermissionUtils.checkPermissionAndGo(this, 1003, new Runnable() {
+        permissionUtils = PermissionUtil.checkPermissionAndGo(this, 1003, new Runnable() {
             @Override
             public void run() {
 
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity
         messageItemView = (TextView) navigationView.getMenu().
                 findItem(R.id.nav_message).getActionView();
 
-        EventsUtils.register(this);
+        EventsUtil.register(this);
         reCountMessage();
 
 
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventsUtils.unregister(this);
+        EventsUtil.unregister(this);
     }
 
     private void reCountMessage(){

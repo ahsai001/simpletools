@@ -13,7 +13,7 @@ import com.ahsailabs.simpletools.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.zaitunlabs.zlcore.core.BaseFragment;
-import com.zaitunlabs.zlcore.utils.CommonUtils;
+import com.zaitunlabs.zlcore.utils.CommonUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -59,11 +59,11 @@ public class SendWAActivityFragment extends BaseFragment {
 
     public boolean sendWA() throws UnsupportedEncodingException {
         if(TextUtils.isEmpty(phoneNumberEditText.getText())){
-            CommonUtils.showSnackBar(getActivity(),"please insert recipient wa number");
+            CommonUtil.showSnackBar(getActivity(),"please insert recipient wa number");
             return false;
         }
         if(TextUtils.isEmpty(messageEditText.getText())){
-            CommonUtils.showSnackBar(getActivity(),"please insert message");
+            CommonUtil.showSnackBar(getActivity(),"please insert message");
             return false;
         }
 
@@ -71,6 +71,6 @@ public class SendWAActivityFragment extends BaseFragment {
         String url = "https://api.whatsapp.com/send?phone="+ phoneNumberEditText.getText()
                 +"&text=" +  URLEncoder.encode(message, "UTF-8");
 
-        return CommonUtils.openUrlWithPackageName(getActivity(),url,"com.whatsapp");
+        return CommonUtil.openUrlWithPackageName(getActivity(),url,"com.whatsapp");
     }
 }

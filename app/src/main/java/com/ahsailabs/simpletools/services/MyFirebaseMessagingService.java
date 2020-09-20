@@ -5,7 +5,7 @@ import com.ahsailabs.simpletools.activities.MainActivity;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.zaitunlabs.zlcore.utils.NotificationUtils;
+import com.zaitunlabs.zlcore.utils.NotificationUtil;
 import com.zaitunlabs.zlcore.utils.PrefsData;
 
 import java.util.HashMap;
@@ -37,14 +37,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         Map<String, String> remoteData = remoteMessage.getData();
-        Map<String, Object> data = new HashMap<>();
-        Set<Map.Entry<String, String>> entrySet = remoteData.entrySet();
 
-        for (Map.Entry<String, String> item : entrySet) {
-            data.put(item.getKey(), item.getValue());
-        }
-
-        NotificationUtils.onMessageReceived(getBaseContext(),data, notifTitle, notifBody
-        ,MainActivity.class, null, null, R.string.app_name,R.mipmap.ic_launcher, null);
+        NotificationUtil.onMessageReceived(getBaseContext(),remoteData, notifTitle, notifBody
+        ,MainActivity.class, null, null, R.string.app_name,R.mipmap.ic_launcher, null, false);
     }
 }

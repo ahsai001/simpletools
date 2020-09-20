@@ -14,9 +14,9 @@ import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.models.ReadQuranLogModel;
 import com.opencsv.CSVReader;
 import com.zaitunlabs.zlcore.core.BaseRecyclerViewAdapter;
-import com.zaitunlabs.zlcore.utils.CommonUtils;
-import com.zaitunlabs.zlcore.utils.DateStringUtils;
-import com.zaitunlabs.zlcore.utils.FileUtils;
+import com.zaitunlabs.zlcore.utils.CommonUtil;
+import com.zaitunlabs.zlcore.utils.DateStringUtil;
+import com.zaitunlabs.zlcore.utils.FileUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class ReadQuranLogListAdapter extends BaseRecyclerViewAdapter<ReadQuranLo
     @Override
     protected void doSettingViewWithModel(ReadQuranLogListViewHolder holder, ReadQuranLogModel dataModel, int position) {
         holder.titleView.setText(dataModel.getSurat()+" "+dataModel.getAyat()+" ( juz "+getCurrentJuz(holder.titleView.getContext(),dataModel)+")");
-        holder.bodyView.setText(DateStringUtils.getDateTimeInString(dataModel.timestamp, CommonUtils.getIndonesianLocale()));
+        holder.bodyView.setText(DateStringUtil.getDateTimeInString(dataModel._created_at, null, CommonUtil.getIndonesianLocale()));
         setViewClickable(holder, holder.optionView);
         setViewClickable(holder, holder.rootView);
     }
@@ -81,14 +81,14 @@ public class ReadQuranLogListAdapter extends BaseRecyclerViewAdapter<ReadQuranLo
            ayatInJuzList = new ArrayList<>();
            try {
                CsvReader csvReader = new CsvReader();
-               CsvParser csvParser = csvReader.parse(FileUtils.getReaderFromRawFile(context, R.raw.ayatinjuz));
+               CsvParser csvParser = csvReader.parse(FileUtil.getReaderFromRawFile(context, R.raw.ayatinjuz));
                CsvRow row;
                while ((row = csvParser.nextRow()) != null) {
                    ayatInJuzList.add(Integer.parseInt(row.getField(1)));
                }
            } catch (NoClassDefFoundError e){
                 try {
-                    CSVReader reader = new CSVReader(FileUtils.getReaderFromRawFile(context, R.raw.ayatinjuz));
+                    CSVReader reader = new CSVReader(FileUtil.getReaderFromRawFile(context, R.raw.ayatinjuz));
                     String[] nextLine;
                     while ((nextLine = reader.readNext()) != null) {
                         ayatInJuzList.add(Integer.parseInt(nextLine[1]));

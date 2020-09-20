@@ -11,7 +11,7 @@ import android.view.View;
 import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.fragments.SendWAActivityFragment;
 import com.zaitunlabs.zlcore.core.BaseActivity;
-import com.zaitunlabs.zlcore.utils.CommonUtils;
+import com.zaitunlabs.zlcore.utils.CommonUtil;
 
 import java.io.UnsupportedEncodingException;
 
@@ -35,7 +35,7 @@ public class SendWAActivity extends BaseActivity {
                         fragment.sendWA();
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
-                        CommonUtils.showSnackBar(SendWAActivity.this, "please edit your message, some words not supported");
+                        CommonUtil.showSnackBar(SendWAActivity.this, "please edit your message, some words not supported");
                     }
                 }
             }

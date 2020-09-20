@@ -1,16 +1,6 @@
 package com.ahsailabs.simpletools.fragments;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.os.Bundle;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +12,15 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.activities.ProgressActivity;
 import com.ahsailabs.simpletools.adapters.ReadQuranLogListAdapter;
@@ -30,14 +29,14 @@ import com.opencsv.CSVReader;
 import com.zaitunlabs.zlcore.core.BaseFragment;
 import com.zaitunlabs.zlcore.core.BaseRecyclerViewAdapter;
 import com.zaitunlabs.zlcore.customs.DataList;
-import com.zaitunlabs.zlcore.utils.CommonUtils;
-import com.zaitunlabs.zlcore.utils.FileUtils;
-import com.zaitunlabs.zlcore.utils.FormCommonUtils;
+import com.zaitunlabs.zlcore.utils.CommonUtil;
+import com.zaitunlabs.zlcore.utils.FileUtil;
+import com.zaitunlabs.zlcore.utils.FormCommonUtil;
 import com.zaitunlabs.zlcore.views.CustomRecylerView;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.siegmar.fastcsv.reader.CsvParser;
@@ -93,7 +92,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
 
         try {
             CsvReader csvReader = new CsvReader();
-            CsvParser csvParser = csvReader.parse(FileUtils.getReaderFromRawFile(getActivity(), R.raw.alquran));
+            CsvParser csvParser = csvReader.parse(FileUtil.getReaderFromRawFile(getActivity(), R.raw.alquran));
             CsvRow row;
             while ((row = csvParser.nextRow()) != null) {
                 suratList.add(row.getField(0) + "." + row.getField(1));
@@ -101,7 +100,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
             }
         } catch (NoClassDefFoundError e){
             try {
-                CSVReader reader = new CSVReader(FileUtils.getReaderFromRawFile(getActivity(), R.raw.alquran));
+                CSVReader reader = new CSVReader(FileUtil.getReaderFromRawFile(getActivity(), R.raw.alquran));
                 String[] nextLine;
                 while ((nextLine = reader.readNext()) != null) {
                     suratList.add(nextLine[0] + "." + nextLine[1]);
@@ -117,7 +116,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
 
         logReadQuranListAdapter.setAyatList(ayatList);
 
-        FormCommonUtils.setSpinnerList(getActivity(), suratView, new DataList<String>().addAll(suratList), new DataList<String>(),
+        FormCommonUtil.setSpinnerList(getActivity(), suratView, new DataList<String>().addAll(suratList), new DataList<String>(),
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
@@ -138,7 +137,9 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                 int nomor = suratView.getSelectedItemPosition()+1;
                 String surat = (String)suratView.getSelectedItem();
                 int ayat = ayatView.getValue();
-                ReadQuranLogModel newReadModel = new ReadQuranLogModel(nomor, surat, ayat).saveWithTimeStamp();
+                ReadQuranLogModel newReadModel = new ReadQuranLogModel(nomor, surat, ayat);
+                newReadModel.save();
+                newReadModel._created_at = new Date(System.currentTimeMillis());
                 logModelList.add(0, newReadModel);
                 logReadQuranListAdapter.notifyItemInserted(0);
                 recyclerView.smoothScrollToPosition(0);
@@ -177,17 +178,17 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
             ayatView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    CommonUtils.hideKeyboard(ayatView.getContext(), ayatView);
+                    CommonUtil.hideKeyboard(ayatView.getContext(), ayatView);
                     ayatView.setValue(logModelList.get(0).getAyat());
                 }
             }, 500);
         }
 
-        logReadQuranListAdapter.setOnChildViewClickListener(new BaseRecyclerViewAdapter.OnChildViewClickListener() {
+        logReadQuranListAdapter.addOnChildViewClickListener(new BaseRecyclerViewAdapter.OnChildViewClickListener() {
             @Override
             public void onClick(View view, Object dataModel, final int position) {
                 if(view.getId() == R.id.item_row_optionView){
-                    CommonUtils.showPopupMenu(view.getContext(), R.menu.menu_item_read_quran_log, view, null,
+                    CommonUtil.showPopupMenu(view.getContext(), R.menu.menu_item_read_quran_log, view, null,
                             new PopupMenu.OnMenuItemClickListener() {
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
@@ -203,6 +204,11 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                 } else if(view instanceof CardView){
 
                 }
+            }
+
+            @Override
+            public void onLongClick(View view, Object dataModel, int position) {
+
             }
         });
 
@@ -224,14 +230,14 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_delete_all:
-                CommonUtils.showDialog2Option(getActivity(), "Delete log confirmation", "are you sure?",
+                CommonUtil.showDialog2Option(getActivity(), "Delete log confirmation", "are you sure?",
                         "delete", new Runnable() {
                             @Override
                             public void run() {
                                 ReadQuranLogModel.deleteAll();
                                 logModelList.clear();
                                 logReadQuranListAdapter.notifyDataSetChanged();
-                                CommonUtils.showSnackBar(getActivity(),"delete all log successfully");
+                                CommonUtil.showSnackBar(getActivity(),"delete all log successfully");
                             }
                         }, "cancel", new Runnable() {
                             @Override

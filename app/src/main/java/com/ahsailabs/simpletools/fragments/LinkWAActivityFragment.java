@@ -19,8 +19,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.zaitunlabs.zlcore.api.APIResponse;
 import com.zaitunlabs.zlcore.core.BaseFragment;
-import com.zaitunlabs.zlcore.utils.CommonUtils;
-import com.zaitunlabs.zlcore.utils.HttpClientUtils;
+import com.zaitunlabs.zlcore.utils.CommonUtil;
+import com.zaitunlabs.zlcore.utils.HttpClientUtil;
 
 import org.json.JSONObject;
 
@@ -64,16 +64,16 @@ public class LinkWAActivityFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 String linkwa = linkwaTextView.getText().toString();
-                CommonUtils.copyPlainTextToClipboard(getActivity(), "linkwa", linkwa);
-                CommonUtils.showSnackBar(getActivity(), "link click to chat wa already copied to clipboard");
+                CommonUtil.copyPlainTextToClipboard(getActivity(), "linkwa", linkwa);
+                CommonUtil.showSnackBar(getActivity(), "link click to chat wa already copied to clipboard");
             }
         });
         linkwaShortTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String shortlinkwa = linkwaShortTextView .getText().toString();
-                CommonUtils.copyPlainTextToClipboard(getActivity(), "shortlinkwa", shortlinkwa);
-                CommonUtils.showSnackBar(getActivity(), "shortlink click to chat wa already copied to clipboard");
+                CommonUtil.copyPlainTextToClipboard(getActivity(), "shortlinkwa", shortlinkwa);
+                CommonUtil.showSnackBar(getActivity(), "shortlink click to chat wa already copied to clipboard");
             }
         });
     }
@@ -81,20 +81,20 @@ public class LinkWAActivityFragment extends BaseFragment {
 
     public boolean createLink() throws UnsupportedEncodingException {
         if (TextUtils.isEmpty(phoneNumberEditText.getText())) {
-            CommonUtils.showSnackBar(getActivity(), "please insert wa number");
+            CommonUtil.showSnackBar(getActivity(), "please insert wa number");
             return false;
         }
         if (TextUtils.isEmpty(messageEditText.getText())) {
-            CommonUtils.showSnackBar(getActivity(), "please insert message");
+            CommonUtil.showSnackBar(getActivity(), "please insert message");
             return false;
         }
         String phoneNumber = phoneNumberEditText.getText().toString();
         String message = messageEditText.getText().toString();
-        final Snackbar loading = CommonUtils.showLoadingSnackBar(getActivity(),"Please wait...");
+        final Snackbar loading = CommonUtil.showLoadingSnackBar(getActivity(),"Please wait...");
         AndroidNetworking.post("https://api.zaitunlabs.com/genpro/v1/waapi")
-                .setOkHttpClient(HttpClientUtils.getHTTPClient(getActivity(),"v1", true))
+                .setOkHttpClient(HttpClientUtil.getHTTPClient(getActivity(),"v1", true))
                 .addBodyParameter("nowa",phoneNumber)
-                .addBodyParameter("message",CommonUtils.urlEncode(message))
+                .addBodyParameter("message",CommonUtil.urlEncode(message))
                 .setTag("linkwa")
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -110,9 +110,9 @@ public class LinkWAActivityFragment extends BaseFragment {
                             String shortlinkwa = data.optString("linkshort");
                             linkwaShortTextView.setText(shortlinkwa);
 
-                            CommonUtils.showSnackBar(getActivity(), "Done, click link to copy to clipboard");
+                            CommonUtil.showSnackBar(getActivity(), "Done, click link to copy to clipboard");
                         } else {
-                            CommonUtils.showSnackBar(getActivity(), message);
+                            CommonUtil.showSnackBar(getActivity(), message);
                         }
                         loading.dismiss();
                     }
@@ -120,7 +120,7 @@ public class LinkWAActivityFragment extends BaseFragment {
                     @Override
                     public void onError(ANError anError) {
                         loading.dismiss();
-                        CommonUtils.showSnackBar(getActivity(), anError.getErrorDetail());
+                        CommonUtil.showSnackBar(getActivity(), anError.getErrorDetail());
                     }
                 });
         return true;

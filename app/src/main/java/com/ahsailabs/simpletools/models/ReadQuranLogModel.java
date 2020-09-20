@@ -1,24 +1,18 @@
 package com.ahsailabs.simpletools.models;
 
-import android.provider.BaseColumns;
-import androidx.annotation.RequiresPermission;
-
-import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Delete;
-import com.activeandroid.query.Select;
+import com.ahsailabs.simpletools.cores.BaseApp;
+import com.ahsailabs.sqlitewrapper.SQLiteWrapper;
+import com.ahsailabs.sqlwannotation.Column;
+import com.ahsailabs.sqlwannotation.Table;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by ahsai on 5/17/2018.
  */
-@Table(name = "ReadQuranLog", id = BaseColumns._ID)
-public class ReadQuranLogModel extends Model implements Serializable {
+@Table()
+public class ReadQuranLogModel extends SQLiteWrapper.TableClass implements Serializable {
 
     @Column(name = "nomor")
     private int nomor;
@@ -29,13 +23,19 @@ public class ReadQuranLogModel extends Model implements Serializable {
     @Column(name = "ayat")
     private int ayat;
 
-    @Column(name = "timestamp", index = true)
-    public Date timestamp;
+    @Override
+    protected void getObjectData(List<Object> dataList) {
+        ReadQuranLogModelSQLWHelper.getObjectData(dataList, this);
+    }
 
-    public ReadQuranLogModel saveWithTimeStamp(){
-        timestamp = Calendar.getInstance().getTime();
-        save();
-        return this;
+    @Override
+    protected void setObjectData(List<Object> dataList) {
+        ReadQuranLogModelSQLWHelper.setObjectData(dataList, this);
+    }
+
+    @Override
+    protected String getDatabaseName() {
+        return BaseApp.DATABASE_NAME;
     }
 
     public ReadQuranLogModel(){
@@ -73,12 +73,11 @@ public class ReadQuranLogModel extends Model implements Serializable {
         this.ayat = ayat;
     }
 
-
     public static List<ReadQuranLogModel> getAllReadQuranLogList(){
-        return new Select().from(ReadQuranLogModel.class).orderBy("timestamp desc").execute();
+        return SQLiteWrapper.of(BaseApp.DATABASE_NAME).findAll(null, ReadQuranLogModel.class,SQLiteWrapper.CREATED_AT+" desc", null, null);
     }
 
     public static void deleteAll(){
-        new Delete().from(ReadQuranLogModel.class).execute();
+        SQLiteWrapper.of(BaseApp.DATABASE_NAME).deleteAll(null, ReadQuranLogModel.class);
     }
 }
