@@ -1,6 +1,8 @@
 package com.ahsailabs.simpletools.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +27,17 @@ import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.activities.ProgressActivity;
 import com.ahsailabs.simpletools.adapters.ReadQuranLogListAdapter;
 import com.ahsailabs.simpletools.models.ReadQuranLogModel;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.opencsv.CSVReader;
 import com.zaitunlabs.zlcore.core.BaseFragment;
 import com.zaitunlabs.zlcore.core.BaseRecyclerViewAdapter;
@@ -36,6 +49,7 @@ import com.zaitunlabs.zlcore.views.CustomRecylerView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +61,7 @@ import de.siegmar.fastcsv.reader.CsvRow;
  * A placeholder fragment containing a simple view.
  */
 public class ReadQuranLogActivityFragment extends BaseFragment {
+    private static final int RC_SIGN_IN = 10012;
     private Spinner suratView;
     private NumberPicker ayatView;
     private Button logButton;
@@ -56,7 +71,9 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
     private ArrayList<Integer> ayatList = new ArrayList<>();
     private List<ReadQuranLogModel> logModelList = new ArrayList<>();
     private ReadQuranLogListAdapter logReadQuranListAdapter;
-
+    private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseFirestore firebaseFirestore;
+    private String userId;
 
     public ReadQuranLogActivityFragment() {
     }
@@ -67,6 +84,78 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         logReadQuranListAdapter = new ReadQuranLogListAdapter(logModelList);
         setHasOptionsMenu(true);
+
+    }
+
+    private void updateUI(GoogleSignInAccount account) {
+        if(account != null){
+            userId = account.getId();
+            firebaseFirestore.collection("quranreadinglogs")
+                    .document(userId).collection("logs")
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        logModelList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d(TAG, document.getId() + " => " + document.getData());
+                            ReadQuranLogModel model = document.toObject(ReadQuranLogModel.class);
+                            model.setDocId(document.getId());
+                            logModelList.add(model);
+                        }
+                        Collections.reverse(logModelList);
+                        logReadQuranListAdapter.notifyDataSetChanged();
+
+                        if(logModelList.size() > 0){
+                            suratView.setSelection(logModelList.get(0).getNomor()-1);
+                            ayatView.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    CommonUtil.hideKeyboard(ayatView.getContext(), ayatView);
+                                    ayatView.setValue(logModelList.get(0).getAyat());
+                                }
+                            }, 500);
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+        } else {
+            signIn();
+        }
+    }
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
     }
 
     @Override
@@ -137,12 +226,29 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                 int nomor = suratView.getSelectedItemPosition()+1;
                 String surat = (String)suratView.getSelectedItem();
                 int ayat = ayatView.getValue();
-                ReadQuranLogModel newReadModel = new ReadQuranLogModel(nomor, surat, ayat);
-                newReadModel.save();
+                final ReadQuranLogModel newReadModel = new ReadQuranLogModel(nomor, surat, ayat);
                 newReadModel._created_at = new Date(System.currentTimeMillis());
-                logModelList.add(0, newReadModel);
-                logReadQuranListAdapter.notifyItemInserted(0);
-                recyclerView.smoothScrollToPosition(0);
+                //newReadModel.save(); //cara sqlite
+                //cara firestore
+                if(userId != null) {
+                    firebaseFirestore.collection("quranreadinglogs")
+                            .document(userId).collection("logs")
+                            .add(newReadModel).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if(task.isSuccessful()){
+                                Log.d(TAG, "DocumentSnapshot written with ID: " + task.getResult().getId());
+                                newReadModel.setDocId(task.getResult().getId());
+
+                                logModelList.add(0, newReadModel);
+                                logReadQuranListAdapter.notifyItemInserted(0);
+                                recyclerView.smoothScrollToPosition(0);
+                            }
+                        }
+                    });
+                } else {
+                    signIn();
+                }
             }
         });
 
@@ -170,6 +276,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
             }
         }));*/
 
+        /* //load data cara sqlite
         logModelList.addAll(ReadQuranLogModel.getAllReadQuranLogList());
         logReadQuranListAdapter.notifyDataSetChanged();
 
@@ -183,6 +290,8 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                 }
             }, 500);
         }
+         */
+
 
         logReadQuranListAdapter.addOnChildViewClickListener(new BaseRecyclerViewAdapter.OnChildViewClickListener() {
             @Override
@@ -194,9 +303,22 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                                 public boolean onMenuItemClick(MenuItem item) {
                                     if(item.getItemId() == R.id.action_delete){
                                         ReadQuranLogModel readQuranLogModel = logModelList.get(position);
-                                        readQuranLogModel.delete();
-                                        logModelList.remove(position);
-                                        logReadQuranListAdapter.notifyItemRemoved(position);
+                                        //readQuranLogModel.delete();
+                                        //cara firestore
+                                        firebaseFirestore.collection("quranreadinglogs")
+                                                .document(userId).collection("logs")
+                                                .document(readQuranLogModel.getDocId())
+                                                .delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()){
+                                                    logModelList.remove(position);
+                                                    logReadQuranListAdapter.notifyItemRemoved(position);
+                                                }
+                                            }
+                                        });
+
+
                                     }
                                     return true;
                                 }
@@ -211,6 +333,18 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
 
             }
         });
+
+
+
+
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestId()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+        updateUI(account);
 
     }
 

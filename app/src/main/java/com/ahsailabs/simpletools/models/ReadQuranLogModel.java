@@ -14,6 +14,8 @@ import java.util.List;
 @Table()
 public class ReadQuranLogModel extends SQLiteWrapper.TableClass implements Serializable {
 
+    private String docId;
+
     @Column(name = "nomor")
     private int nomor;
 
@@ -57,6 +59,7 @@ public class ReadQuranLogModel extends SQLiteWrapper.TableClass implements Seria
         this.nomor = nomor;
     }
 
+    
     public String getSurat() {
         return surat;
     }
@@ -79,5 +82,13 @@ public class ReadQuranLogModel extends SQLiteWrapper.TableClass implements Seria
 
     public static void deleteAll(){
         SQLiteWrapper.of(BaseApp.DATABASE_NAME).deleteAll(null, ReadQuranLogModel.class);
+    }
+
+    public String getDocId() {
+        return docId;
+    }
+
+    public void setDocId(String docId) {
+        this.docId = docId;
     }
 }

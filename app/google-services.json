@@ -23,13 +23,29 @@
           }
         },
         {
+          "client_id": "368641058862-k01ugqhm13v6kaf0l82n9v8bmtlkm1a7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ahsailabs.simpletools",
+            "certificate_hash": "ab60f983f935ff1899bbd5b3cf225886a20e568c"
+          }
+        },
+        {
+          "client_id": "368641058862-pibujooltougt5cnf78dkb3l7mf0emh7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ahsailabs.simpletools",
+            "certificate_hash": "1a486bcfb2029d74372a1f42e80a2b72482ad85a"
+          }
+        },
+        {
           "client_id": "368641058862-1l4mh0hqm1pjm2r8dg5k1alq16rvcalj.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAcXtqAQ4wAC_O_J_rNCnqPl3ETkMZn-Jo"
+          "current_key": "AIzaSyCgLplHSKK98fCZvgD-Ag2vHeT0JF4FCwk"
         }
       ],
       "services": {
