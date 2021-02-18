@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.opencsv.CSVReader;
@@ -84,7 +85,6 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         logReadQuranListAdapter = new ReadQuranLogListAdapter(logModelList);
         setHasOptionsMenu(true);
-
     }
 
     private void updateUI(GoogleSignInAccount account) {
@@ -92,6 +92,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
             userId = account.getId();
             firebaseFirestore.collection("quranreadinglogs")
                     .document(userId).collection("logs")
+                    .orderBy("_created_at", Query.Direction.DESCENDING)
                     .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -103,7 +104,6 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                             model.setDocId(document.getId());
                             logModelList.add(model);
                         }
-                        Collections.reverse(logModelList);
                         logReadQuranListAdapter.notifyDataSetChanged();
 
                         if(logModelList.size() > 0){
