@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.activities.ProgressActivity;
 import com.ahsailabs.simpletools.adapters.ReadQuranLogListAdapter;
+import com.ahsailabs.simpletools.databinding.FragmentReadQuranLogBinding;
 import com.ahsailabs.simpletools.models.ReadQuranLogModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,6 +34,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -63,11 +65,6 @@ import de.siegmar.fastcsv.reader.CsvRow;
  */
 public class ReadQuranLogActivityFragment extends BaseFragment {
     private static final int RC_SIGN_IN = 10012;
-    private Spinner suratView;
-    private NumberPicker ayatView;
-    private Button logButton;
-    private CustomRecylerView recyclerView;
-    private View emptyView;
     private List<String> suratList = new ArrayList<>();
     private ArrayList<Integer> ayatList = new ArrayList<>();
     private List<ReadQuranLogModel> logModelList = new ArrayList<>();
@@ -75,6 +72,8 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseFirestore firebaseFirestore;
     private String userId;
+
+    private FragmentReadQuranLogBinding binding;
 
     public ReadQuranLogActivityFragment() {
     }
@@ -107,12 +106,12 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                         logReadQuranListAdapter.notifyDataSetChanged();
 
                         if(logModelList.size() > 0){
-                            suratView.setSelection(logModelList.get(0).getNomor()-1);
-                            ayatView.postDelayed(new Runnable() {
+                            binding.suratView.setSelection(logModelList.get(0).getNomor()-1);
+                            binding.ayatView.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    CommonUtil.hideKeyboard(ayatView.getContext(), ayatView);
-                                    ayatView.setValue(logModelList.get(0).getAyat());
+                                    CommonUtil.hideKeyboard(binding.ayatView.getContext(), binding.ayatView);
+                                    binding.ayatView.setValue(logModelList.get(0).getAyat());
                                 }
                             }, 500);
                         }
@@ -161,18 +160,13 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_read_quran_log, container, false);
+        binding = FragmentReadQuranLogBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        suratView = view.findViewById(R.id.suratView);
-        ayatView = view.findViewById(R.id.ayatView);
-        logButton = view.findViewById(R.id.logButtonView);
-
-        recyclerView = view.findViewById(R.id.logRecylerView);
-        emptyView = view.findViewById(R.id.log_empty_view);
     }
 
     @Override
@@ -205,12 +199,12 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
 
         logReadQuranListAdapter.setAyatList(ayatList);
 
-        FormCommonUtil.setSpinnerList(getActivity(), suratView, new DataList<String>().addAll(suratList), new DataList<String>(),
+        FormCommonUtil.setSpinnerList(getActivity(), binding.suratView, new DataList<String>().addAll(suratList), new DataList<String>(),
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                        ayatView.setMinValue(1);
-                        ayatView.setMaxValue(ayatList.get(position));
+                        binding.ayatView.setMinValue(1);
+                        binding.ayatView.setMaxValue(ayatList.get(position));
                     }
 
                     @Override
@@ -220,12 +214,12 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                 });
 
 
-        logButton.setOnClickListener(new View.OnClickListener() {
+        binding.logButtonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int nomor = suratView.getSelectedItemPosition()+1;
-                String surat = (String)suratView.getSelectedItem();
-                int ayat = ayatView.getValue();
+                int nomor = binding.suratView.getSelectedItemPosition()+1;
+                String surat = (String)binding.suratView.getSelectedItem();
+                int ayat = binding.ayatView.getValue();
                 final ReadQuranLogModel newReadModel = new ReadQuranLogModel(nomor, surat, ayat);
                 newReadModel._created_at = new Date(System.currentTimeMillis());
                 //newReadModel.save(); //cara sqlite
@@ -242,7 +236,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
 
                                 logModelList.add(0, newReadModel);
                                 logReadQuranListAdapter.notifyItemInserted(0);
-                                recyclerView.smoothScrollToPosition(0);
+                                binding.logRecylerView.smoothScrollToPosition(0);
                             }
                         }
                     });
@@ -253,15 +247,15 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
         });
 
 
-        recyclerView.setHasFixedSize(true);
+        binding.logRecylerView.setHasFixedSize(true);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
+        binding.logRecylerView.setLayoutManager(mLayoutManager);
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(itemDecoration);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        binding.logRecylerView.addItemDecoration(itemDecoration);
+        binding.logRecylerView.setItemAnimator(new DefaultItemAnimator());
 
-        recyclerView.setEmptyView(emptyView);
-        recyclerView.setAdapter(logReadQuranListAdapter);
+        binding.logRecylerView.setEmptyView(binding.logEmptyView);
+        binding.logRecylerView.setAdapter(logReadQuranListAdapter);
 
         /*
         recyclerView.addOnItemTouchListener(new RecyclerViewTouchListener(getActivity(), recyclerView, new RecyclerViewTouchListener.RecyclerViewItemClickListener() {
@@ -368,7 +362,20 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                         "delete", new Runnable() {
                             @Override
                             public void run() {
-                                ReadQuranLogModel.deleteAll();
+                                //ReadQuranLogModel.deleteAll();
+
+                                firebaseFirestore.collection("quranreadinglogs")
+                                        .document(userId).collection("logs")
+                                        .orderBy("_created_at", Query.Direction.DESCENDING)
+                                        .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                            document.getReference().delete();
+                                        }
+                                    }
+                                });
+
                                 logModelList.clear();
                                 logReadQuranListAdapter.notifyDataSetChanged();
                                 CommonUtil.showSnackBar(getActivity(),"delete all log successfully");
@@ -381,7 +388,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                         });
                 return true;
             case R.id.action_show_progress:
-                ProgressActivity.Companion.start(getActivity(), ayatList);
+                ProgressActivity.Companion.start(getActivity(), (ArrayList<ReadQuranLogModel>) logModelList, ayatList);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

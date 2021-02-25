@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.appcompat.widget.Toolbar;
 
 import com.ahsailabs.simpletools.R;
+import com.ahsailabs.simpletools.databinding.ActivityReadQuranLogBinding;
 import com.ahsailabs.simpletools.fragments.ReadQuranLogActivityFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zaitunlabs.zlcore.core.BaseActivity;
@@ -18,9 +19,9 @@ public class ReadQuranLogActivity extends BaseActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_read_quran_log);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ActivityReadQuranLogBinding binding = ActivityReadQuranLogBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        setSupportActionBar(binding.toolbar);
 
         enableUpNavigation();
 
