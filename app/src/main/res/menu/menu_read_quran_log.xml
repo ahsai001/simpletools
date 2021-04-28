@@ -10,4 +10,14 @@
         android:orderInCategory="99"
         android:title="Show Progress Chart"
         app:showAsAction="never"/>
+
+    <item android:id="@+id/action_login"
+        android:orderInCategory="98"
+        android:title="Login"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_logout"
+        android:orderInCategory="97"
+        android:title="Logout"
+        app:showAsAction="never"/>
 </menu>

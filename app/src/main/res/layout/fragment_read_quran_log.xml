@@ -49,6 +49,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/ayatView"
+        app:layout_constraintBottom_toTopOf="@id/openButtonView"
+        app:layout_constraintStart_toEndOf="@id/ayatView"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <Button
+        android:id="@+id/openButtonView"
+        android:text="open"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/logButtonView"
         app:layout_constraintBottom_toBottomOf="@id/ayatView"
         app:layout_constraintStart_toEndOf="@id/ayatView"
         app:layout_constraintEnd_toEndOf="parent"/>

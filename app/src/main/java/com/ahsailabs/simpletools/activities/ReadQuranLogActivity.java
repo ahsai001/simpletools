@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.appcompat.widget.Toolbar;
-
 import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.databinding.ActivityReadQuranLogBinding;
 import com.ahsailabs.simpletools.fragments.ReadQuranLogActivityFragment;
@@ -16,6 +14,7 @@ import com.zaitunlabs.zlcore.core.BaseActivity;
 
 public class ReadQuranLogActivity extends BaseActivity{
     ReadQuranLogActivityFragment fragment;
+    FloatingActionButton fab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,21 +24,25 @@ public class ReadQuranLogActivity extends BaseActivity{
 
         enableUpNavigation();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                fragment.loginLogout();
             }
         });
-
-
 
         fragment = showFragment(R.id.fragment,ReadQuranLogActivityFragment.class,null, savedInstanceState, "readquranlog");
     }
 
 
+    public void setFABLogin(){
+        fab.setImageResource(R.drawable.ic_login);
+    }
 
+    public void setFABLogout(){
+        fab.setImageResource(R.drawable.ic_logout);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

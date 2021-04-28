@@ -1,7 +1,10 @@
 package com.ahsailabs.simpletools.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,9 +28,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahsailabs.simpletools.R;
 import com.ahsailabs.simpletools.activities.ProgressActivity;
+import com.ahsailabs.simpletools.activities.ReadQuranLogActivity;
 import com.ahsailabs.simpletools.adapters.ReadQuranLogListAdapter;
 import com.ahsailabs.simpletools.databinding.FragmentReadQuranLogBinding;
 import com.ahsailabs.simpletools.models.ReadQuranLogModel;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -36,6 +42,8 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -46,12 +54,14 @@ import com.zaitunlabs.zlcore.core.BaseFragment;
 import com.zaitunlabs.zlcore.core.BaseRecyclerViewAdapter;
 import com.zaitunlabs.zlcore.customs.DataList;
 import com.zaitunlabs.zlcore.utils.CommonUtil;
+import com.zaitunlabs.zlcore.utils.DebugUtil;
 import com.zaitunlabs.zlcore.utils.FileUtil;
 import com.zaitunlabs.zlcore.utils.FormCommonUtil;
 import com.zaitunlabs.zlcore.views.CustomRecylerView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -86,9 +96,9 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
         setHasOptionsMenu(true);
     }
 
-    private void updateUI(GoogleSignInAccount account) {
-        if(account != null){
-            userId = account.getId();
+    private void updateUI(FirebaseUser user) {
+        if(user != null){
+            userId = user.getUid();
             firebaseFirestore.collection("quranreadinglogs")
                     .document(userId).collection("logs")
                     .orderBy("_created_at", Query.Direction.DESCENDING)
@@ -120,14 +130,29 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                     }
                 }
             });
+
+            ((ReadQuranLogActivity)getActivity()).setFABLogout();
         } else {
             signIn();
         }
     }
 
     private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        //Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        //startActivityForResult(signInIntent, RC_SIGN_IN);
+
+        // Choose authentication providers
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build(),
+                new AuthUI.IdpConfig.GoogleBuilder().build());
+
+        // Create and launch sign-in intent
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .build(),
+                RC_SIGN_IN);
     }
 
     @Override
@@ -135,11 +160,34 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        /*if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
+        }*/
+
+
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == Activity.RESULT_OK) {
+                // Successfully signed in
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                updateUI(user);
+            } else {
+                // Sign in failed. If response is null the user canceled the
+                // sign-in flow using the back button. Otherwise check
+                // response.getError().getErrorCode() and handle the error.
+                // ...
+
+                if(response != null){
+                    DebugUtil.logE("readquranlog",response.getError().getMessage());
+                    updateUI(null);
+                } else {
+                    //user cancel
+                }
+            }
         }
     }
 
@@ -148,7 +196,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            updateUI(account);
+            //updateUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -224,7 +272,7 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                 newReadModel._created_at = new Date(System.currentTimeMillis());
                 //newReadModel.save(); //cara sqlite
                 //cara firestore
-                if(userId != null) {
+                if(isLoggedIn()) {
                     firebaseFirestore.collection("quranreadinglogs")
                             .document(userId).collection("logs")
                             .add(newReadModel).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
@@ -287,16 +335,16 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
          */
 
 
-        logReadQuranListAdapter.addOnChildViewClickListener(new BaseRecyclerViewAdapter.OnChildViewClickListener() {
+        logReadQuranListAdapter.addOnChildViewClickListener(new BaseRecyclerViewAdapter.OnChildViewClickListener<ReadQuranLogModel>() {
             @Override
-            public void onClick(View view, Object dataModel, final int position) {
+            public void onClick(View view, ReadQuranLogModel dataModel, final int position) {
+                final ReadQuranLogModel readQuranLogModel = dataModel;
                 if(view.getId() == R.id.item_row_optionView){
                     CommonUtil.showPopupMenu(view.getContext(), R.menu.menu_item_read_quran_log, view, null,
                             new PopupMenu.OnMenuItemClickListener() {
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
                                     if(item.getItemId() == R.id.action_delete){
-                                        ReadQuranLogModel readQuranLogModel = logModelList.get(position);
                                         //readQuranLogModel.delete();
                                         //cara firestore
                                         firebaseFirestore.collection("quranreadinglogs")
@@ -313,33 +361,66 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
                                         });
 
 
+                                    } else if(item.getItemId() == R.id.action_open){
+                                        openQuran(readQuranLogModel.getNomor(), readQuranLogModel.getAyat());
                                     }
                                     return true;
                                 }
                             });
                 } else if(view instanceof CardView){
-
+                    openQuran(readQuranLogModel.getNomor(), readQuranLogModel.getAyat());
                 }
             }
 
             @Override
-            public void onLongClick(View view, Object dataModel, int position) {
+            public void onLongClick(View view, ReadQuranLogModel dataModel, int position) {
 
             }
         });
 
 
+        binding.openButtonView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int surat = binding.suratView.getSelectedItemPosition()+1;
+                int ayat = binding.ayatView.getValue();
+                openQuran(surat, ayat);
+            }
+        });
 
 
         firebaseFirestore = FirebaseFirestore.getInstance();
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+
+        /*GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestId()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
-        updateUI(account);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());*/
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        updateUI(user);
+    }
+
+    public void openQuran(int surat, int ayat){
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        try {
+            i.setData(Uri.parse("quran://"+surat+"/"+ayat));
+            if (i.resolveActivity(getActivity().getPackageManager()) != null) {
+                getActivity().startActivity(i);
+            } else {
+                CommonUtil.showDialog1Option(getActivity(), "Application is not yet installed",
+                        "please install Quran for Android to open it",
+                        "install", new Runnable() {
+                            @Override
+                            public void run() {
+                                CommonUtil.openPlayStore(getContext(),"com.quran.labs.androidquran");
+                            }
+                        });
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void refreshList(){
@@ -352,6 +433,21 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_read_quran_log, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem loginItem = menu.findItem(R.id.action_login);
+        MenuItem logoutItem = menu.findItem(R.id.action_logout);
+
+        if(!isLoggedIn()){
+            loginItem.setVisible(true);
+            logoutItem.setVisible(false);
+        } else {
+            loginItem.setVisible(false);
+            logoutItem.setVisible(true);
+        }
     }
 
     @Override
@@ -390,9 +486,50 @@ public class ReadQuranLogActivityFragment extends BaseFragment {
             case R.id.action_show_progress:
                 ProgressActivity.Companion.start(getActivity(), (ArrayList<ReadQuranLogModel>) logModelList, ayatList);
                 return true;
+            case R.id.action_logout:
+                signOut();
+                return true;
+            case R.id.action_login:
+                signIn();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    private void signOut() {
+
+        CommonUtil.showDialog2Option(getContext(), "Confirmation", "Are you sure want to logout?",
+                "logout", new Runnable() {
+                    @Override
+                    public void run() {
+                        AuthUI.getInstance()
+                                .signOut(getContext())
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        CommonUtil.showSnackBar(getContext(), "Logout berhasil");
+
+                                        userId = null;
+                                        ((ReadQuranLogActivity)getActivity()).setFABLogin();
+                                        logModelList.clear();
+                                        logReadQuranListAdapter.notifyDataSetChanged();
+                                    }
+                                });
+                    }
+                }, "cancel", null);
+
+    }
+
+    public boolean isLoggedIn(){
+        return !TextUtils.isEmpty(userId);
+    }
+
+    public void loginLogout() {
+        if(isLoggedIn()){
+            signOut();
+        } else {
+            signIn();
         }
     }
 }

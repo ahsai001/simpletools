@@ -13,15 +13,16 @@ android {
         applicationId "com.ahsailabs.simpletools"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 6
+        versionCode 7
         //versionName "1.0.1.0" ==> 1
 
 
         //versionName "1.1.2.3" ==> 3
 
-        versionName "1.2.5.7"
+        versionName "1.3.6.20"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -52,11 +53,16 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+
     implementation 'com.google.firebase:firebase-core:17.5.0'
     implementation 'com.google.firebase:firebase-messaging:20.2.4'
     implementation 'com.google.firebase:firebase-ads:19.4.0'
     implementation 'com.google.firebase:firebase-analytics:17.5.0'
     implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+
+    implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
+
+
     implementation 'com.google.android.gms:play-services-ads:19.4.0'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
